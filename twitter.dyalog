@@ -10,7 +10,7 @@
     save_token←{ntie←ncreate'app.token' ⋄ ⍵ ⎕NAPPEND ntie ⋄ ⎕NUNTIE ntie}
 
 
-    auth←{'Authentication: Basic ',base64 ⎕UCS ⍺,':',⍵}
+    auth←{('Authorization' ('Basic ',base64 ⎕UCS ⍺,':',⍵))}
 
       base64←{⎕IO ⎕ML←0 1             ⍝ Base64 encoding and decoding as used in MIME.
      
@@ -30,6 +30,13 @@
           cats←⊃∘(,/)∘((⊂'')∘,)              ⍝ catenate zero or more strings
           cats''∘four¨24 part 8 bits ⍵
       }
+      
+    ∇ r←key get_token secret
+      headers←((key auth secret)('Accept-Encoding' 'gzip'))
+      postdata←⎕NS''
+      postdata.(grant_type)←'client_credentials'
+      r←#.Samples.HTTPReq'https://api.twitter.com/oauth2/token'postdata headers
+    ∇
 
     :Class WgetRequest
         :Field Public Url
